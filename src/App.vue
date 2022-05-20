@@ -54,12 +54,12 @@ export default {
   },
   methods: {
     async addToDo(toDoLabel) {
-
+      let r = Math.round(Math.random() * 1000)
       if(toDoLabel.length > 0){
-        this.ToDoItems.push({id: 'todo' + this._uid, label: toDoLabel, done: false});
+        this.ToDoItems.push({id: 'todo' + this._uid + r, label: toDoLabel, done: false});
         this.saveItems()
       }else{
-        let item =await getRandomItem(this._uid)
+        let item =await getRandomItem(this._uid + r)
         this.ToDoItems.push(item)
         this.saveItems()
       }
