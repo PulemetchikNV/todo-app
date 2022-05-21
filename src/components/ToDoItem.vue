@@ -4,14 +4,6 @@
         <input type="checkbox" class="checkbox" id="id" :checked="isDone"  @change="$emit('checkbox-changed')" />
         <label class='checkbox-label' @dblclick = "toggleToItemEditForm">{{label}}</label>
     </div>
-    <!-- <div class="btn-group">
-      <button type="button" class="btn" ref="editButton" >  
-        Edit <span class="visually-hidden">{{label}}</span>
-      </button>
-      <button type="button" class="btn btn__danger" @click="deleteToDo">
-        Delete <span class="visually-hidden">{{label}}</span>
-      </button>
-    </div> -->
   </div>
   <ToDoItemEditForm v-else :id="id" :label="label"
                       @item-edited="itemEdited"

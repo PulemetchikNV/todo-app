@@ -63,7 +63,6 @@ export default {
         this.ToDoItems.push(item)
         this.saveItems()
       }
-      this._uid += 1
     },
     updateDoneStatus(toDoId) {
       const toDoToUpdate = this.ToDoItems.find(item => item.id === toDoId)
