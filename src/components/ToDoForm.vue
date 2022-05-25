@@ -30,7 +30,7 @@
         }
   };
 </script>
-<style scoped>
+<style scoped lang = 'scss'>
     .inputForm{
         display: flex;
         justify-content: space-between;

@@ -33,6 +33,7 @@
 import ToDoItem from './components/ToDoItem.vue'
 import ToDoForm from './components/ToDoForm';
 import ToDoFilter from './components/ToDoFilter.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
@@ -41,107 +42,61 @@ export default {
     ToDoForm,
     ToDoFilter
   },
-  data() {
-    return {
-      ToDoItems: [],
-      states: [
-                {label: 'All', state : ''},
-                {label: 'Active', state : false},
-                {label: 'Completed', state : true},
-      ],
-      filter : ''
-    };
-  },
   methods: {
-    async addToDo(toDoLabel) {
-      let r = Math.round(Math.random() * 1000)
-      if(toDoLabel.length > 0){
-        this.ToDoItems.push({id: 'todo' + this._uid + r, label: toDoLabel, done: false});
-        this.saveItems()
-      }else{
-        let item =await getRandomItem(this._uid + r)
-        this.ToDoItems.push(item)
-        this.saveItems()
-      }
-    },
-    updateDoneStatus(toDoId) {
-      const toDoToUpdate = this.ToDoItems.find(item => item.id === toDoId)
-      toDoToUpdate.done = !toDoToUpdate.done
+    addToDo(toDoLabel) {
+      this.$store.dispatch('addToDo', toDoLabel)
       this.saveItems()
     },
-    deleteToDo(toDoId) {
-      const itemIndex = this.ToDoItems.findIndex(item => item.id === toDoId);
-      this.ToDoItems.splice(itemIndex, 1);
+    updateDoneStatus(toDoId) {
+      this.$store.commit('updateDoneStatus', toDoId)
       this.saveItems()
     },
     editToDo(toDoId, newLabel) {
-      const toDoToEdit = this.ToDoItems.find(item => item.id === toDoId);
-      toDoToEdit.label = newLabel;
+      this.$store.commit('editToDo', [toDoId, newLabel])
       this.saveItems()
     },
-    updateFilter(state){
-      console.log(state);
-      this.filter = state
+    updateFilter(st){
+      this.$store.commit('updateFilter', st)
+      this.saveItems()
     },
     clearActive(){
-      this.ToDoItems = this.filteredTodos.filter(item => {
-        console.log(item.done == false);
-        return item.done == false
-      })
+      this.$store.commit('clearActive', localStorage)
       this.saveItems()
     },
     saveItems() {
-      const parsed = JSON.stringify(this.ToDoItems);
+      const parsed = JSON.stringify(this.$store.getters.ToDoItems);
       localStorage.setItem('ToDoItems', parsed);
-    }
+    },
+    
   },
   computed: {
-    listSummary() {
-      const numberFinishedItems = this.ToDoItems.filter(item =>item.done).length
-      return `${numberFinishedItems} out of ${this.ToDoItems.length}`
-    },
-    filteredTodos() {
-      if(this.filter !== ''){
-        return this.ToDoItems.filter(item => {
-          return item.done == this.filter 
-        })
-      }else{
-        return this.ToDoItems
-      }
-    }
+    ...mapGetters(['ToDoItems', 'states', 'filter', 'filteredTodos', 'listSummary'])
   },
-  mounted() {
-    if (localStorage.getItem('ToDoItems')) {
-      try {
-        this.ToDoItems = JSON.parse(localStorage.getItem('ToDoItems'));
-      } catch(e) {
-        localStorage.removeItem('ToDoItems');
-      }
-    }
-  },
-  async created() {
-    if(localStorage.getItem('ToDoItems').length < 3){
-      for(let i = 0; i < 3; i++){
-        let item = await getRandomItem(this._uid + i)
-        this.ToDoItems.push(item)
-        this.saveItems()
-      }
-    }
-  }
+  // mounted() {
+  //   console.log(localStorage);
+  //   if (localStorage.getItem('ToDoItems')) {
+  //     try {
+  //       this.$store.getters.ToDoItems = JSON.parse(localStorage.getItem('ToDoItems'));
+  //     } catch(e) {
+  //       localStorage.removeItem('ToDoItems');
+  //     }
+  //   }
+  // },
+  // async created() {
+  //   if(localStorage.getItem('ToDoItems').length < 3){
+  //     for(let i = 0; i < 3; i++){
+  //       this.$store.dispatch('addToDo', '')
+  //       this.saveItems()
+  //     }
+  //   }
+  // }
 }
 
-async function getRandomItem(id){
-  let n = Math.round(Math.random() * 100)
-  let url = `http://jsonplaceholder.typicode.com/posts/${n}`
-  let r = await fetch(url)
-  r = await r.json()
-  let item = {id: 'todo-' + id, label: r[`title`], done: false}
-  return item
-}
+
 
 </script>
 
-<style>
+<style lang="scss">
 .btn {
   width: 40px;
   height: 40px;
@@ -149,16 +104,8 @@ async function getRandomItem(id){
   cursor: pointer;
   text-transform: capitalize;
 }
-.btn__danger {
-  color: #fff;
-  background-color: #ca3c3c;
-  border-color: #bd2130;
-}
 .btn__filter {
   border-color: lightgrey;
-}
-.btn__danger:focus {
-  outline-color: #c82333;
 }
 .btn__primary {
   color: #fff;
@@ -235,18 +182,19 @@ async function getRandomItem(id){
     padding: 4rem;
   }
 }
-#app > * {
-
+#app {
+  form {
+    max-width: 100%;
+  }
 }
-#app > form {
-  max-width: 100%;
-}
-#app h1 {
-  display: block;
-  min-width: 100%;
-  width: 100%;
-  text-align: center;
-  margin: 0;
-  margin-bottom: 1rem;
+#app {
+  h1 {
+    display: block;
+    min-width: 100%;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 1rem;
+  }
 }
 </style>

@@ -36,7 +36,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang = 'scss'>
+$input-border: #565656;
 .edit-label {
   font-family: Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -51,7 +52,7 @@ input {
   width: 100%;
   min-height: 4.4rem;
   padding: 0.4rem 0.8rem;
-  border: 2px solid #565656;
+  border: 2px solid $input-border;
 }
 form {
   display: flex;
