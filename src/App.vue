@@ -45,51 +45,45 @@ export default {
   methods: {
     addToDo(toDoLabel) {
       this.$store.dispatch('addToDo', toDoLabel)
-      this.saveItems()
     },
     updateDoneStatus(toDoId) {
       this.$store.commit('updateDoneStatus', toDoId)
-      this.saveItems()
     },
     editToDo(toDoId, newLabel) {
       this.$store.commit('editToDo', [toDoId, newLabel])
-      this.saveItems()
     },
     updateFilter(st){
       this.$store.commit('updateFilter', st)
-      this.saveItems()
     },
     clearActive(){
       this.$store.commit('clearActive', localStorage)
-      this.saveItems()
-    },
-    saveItems() {
-      const parsed = JSON.stringify(this.$store.getters.ToDoItems);
-      localStorage.setItem('ToDoItems', parsed);
-    },
+    }
     
   },
   computed: {
     ...mapGetters(['ToDoItems', 'states', 'filter', 'filteredTodos', 'listSummary'])
   },
   // mounted() {
-  //   console.log(localStorage);
-  //   if (localStorage.getItem('ToDoItems')) {
-  //     try {
-  //       this.$store.getters.ToDoItems = JSON.parse(localStorage.getItem('ToDoItems'));
-  //     } catch(e) {
-  //       localStorage.removeItem('ToDoItems');
-  //     }
-  //   }
+  //   this.$store.commit('initStore')
+    // console.log(localStorage);
+    // if (localStorage.getItem('ToDoItems')) {
+    //   try {
+    //     this.$store.getters.ToDoItems = JSON.parse(localStorage.getItem('ToDoItems'));
+    //   } catch(e) {
+    //     localStorage.removeItem('ToDoItems');
+    //   }
+    // }
   // },
-  // async created() {
-  //   if(localStorage.getItem('ToDoItems').length < 3){
-  //     for(let i = 0; i < 3; i++){
-  //       this.$store.dispatch('addToDo', '')
-  //       this.saveItems()
-  //     }
-  //   }
-  // }
+  async created() {
+    if (sessionStorage.getItem("store") ) {
+        this.$store.replaceState(Object.assign({}, this.$store.state,JSON.parse(sessionStorage.getItem("store"))))
+    }
+
+    //Save the information in vuex to sessionStorage when the page is refreshed
+    window.addEventListener("beforeunload",()=>{
+        sessionStorage.setItem("store",JSON.stringify(this.$store.state))
+    })
+  }
 }
 
 
